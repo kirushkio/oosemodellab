@@ -1,0 +1,15 @@
+{
+  "name": "food-waste-redistribution",
+  "version": "1.0.0",
+  "description": "Food Waste Donation & Redistribution System",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && node index.js",
+    "client": "cd client && npx vite",
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install",
+    "seed": "cd server && node seed.js"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

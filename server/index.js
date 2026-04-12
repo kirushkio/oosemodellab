@@ -348,15 +348,23 @@ async function start() {
   console.log('📦 Database initialized');
 
   // Run auto-expire every minute
-  setInterval(autoExpireDonations, 60 * 1000);
+  if (process.env.NODE_ENV !== 'production') {
+    setInterval(autoExpireDonations, 60 * 1000);
+  }
   autoExpireDonations();
 
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-  });
+  if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+    });
+  }
 }
 
 start().catch(err => {
   console.error('Failed to start server:', err);
-  process.exit(1);
+  if (process.env.NODE_ENV !== 'production') {
+    process.exit(1);
+  }
 });
+
+module.exports = app;

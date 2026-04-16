@@ -1,4 +1,8 @@
-const BASE = import.meta.env.VITE_API_URL || '/api';
+// Fallback parsing for frontend framework differences:
+const rawBase = import.meta.env.VITE_API_URL || import.meta.env.NEXT_PUBLIC_BACKEND_URL || '';
+// Strip trailing slash if the user accidentally added one
+const cleanBase = rawBase.replace(/\/$/, "");
+const BASE = `${cleanBase}/api`;
 
 async function request(url, options = {}) {
   const res = await fetch(`${BASE}${url}`, {

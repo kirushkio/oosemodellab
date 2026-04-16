@@ -5,12 +5,15 @@ const crypto = require('crypto');
 const { getDb, queryAll, queryOne, runQuery } = require('./db');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: function (origin, callback) {
+    // Allow all origins to make connecting from Vercel easier
+    callback(null, true);
+  },
   credentials: true
 }));
 app.use(session({
@@ -348,21 +351,20 @@ async function start() {
   console.log('📦 Database initialized');
 
   // Run auto-expire every minute
-  if (process.env.NODE_ENV !== 'production') {
-    setInterval(autoExpireDonations, 60 * 1000);
-  }
+  setInterval(autoExpireDonations, 60 * 1000);
   autoExpireDonations();
 
-  if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
+  // If not on Vercel, listen for incoming connections natively (e.g. Render)
+  if (!process.env.VERCEL) {
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   }
 }
 
 start().catch(err => {
   console.error('Failed to start server:', err);
-  if (process.env.NODE_ENV !== 'production') {
+  if (!process.env.VERCEL) {
     process.exit(1);
   }
 });
